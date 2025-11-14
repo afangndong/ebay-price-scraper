@@ -1,1 +1,30 @@
+name: Deploy to Google Cloud Run
 
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Test Application
+      run: |
+        pip install -r requirements.txt
+        python -c "import streamlit; print('Streamlit installed successfully')"
+    
+    - name: Deploy to Google Cloud Run
+      uses: google-github-actions/deploy-cloudrun@v0
+      with:
+        service: price-scraper
+        region: europe-west1
+        credentials: ${{ secrets.GCP_SA_KEY }}
+        source: ./
